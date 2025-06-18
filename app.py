@@ -6,6 +6,11 @@ import os
 from datetime import datetime
 import json
 from models import db
+from models.db_models import db
+
+@app.before_first_request
+def create_tables():
+    db.create_all()
 
 app = Flask(__name__)
 
