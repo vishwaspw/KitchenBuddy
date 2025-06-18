@@ -1,0 +1,286 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - KitchenBuddy{% endblock %}
+
+{% block content %}
+<!-- Welcome Section -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="bg-primary bg-opacity-10 rounded p-4">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <h2 class="fw-bold text-primary mb-2">
+                        <i class="fas fa-tachometer-alt me-2"></i>Welcome, {{ current_user.username }}!
+                    </h2>
+                    <p class="mb-0">Ready to cook something delicious? Use the voice assistant or browse recipes below.</p>
+                </div>
+                <div class="col-md-4 text-md-end">
+                    <div class="d-flex flex-column align-items-end gap-2">
+                        <button id="voiceAssistantBtn" class="btn btn-primary btn-lg rounded-circle p-3">
+                            <i class="fas fa-microphone fa-2x"></i>
+                        </button>
+                        <p class="mb-0 text-muted small">Voice Assistant</p>
+                        
+                        <a href="{{ url_for('voice_only_mode') }}" class="btn btn-success btn-sm">
+                            <i class="fas fa-headphones me-1"></i>Voice-Only Mode
+                        </a>
+                        <p class="mb-0 text-muted small">Hands-free cooking</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Voice Assistant Modal -->
+<div class="modal fade" id="voiceModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="fas fa-microphone me-2"></i>Voice Assistant
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="text-center mb-4">
+                    <button id="startVoiceBtn" class="btn btn-primary btn-lg rounded-circle p-4 mb-3">
+                        <i class="fas fa-microphone fa-3x"></i>
+                    </button>
+                    <p id="voiceStatus" class="text-muted">Click the microphone to start voice recognition</p>
+                </div>
+                
+                <div id="voiceResponse" class="alert alert-info d-none">
+                    <h6>Response:</h6>
+                    <p id="responseText"></p>
+                    <audio id="responseAudio" controls class="w-100"></audio>
+                </div>
+                
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6>Voice Commands:</h6>
+                        <ul class="list-unstyled">
+                            <li><i class="fas fa-play text-success me-2"></i>"Start recipe for [name]"</li>
+                            <li><i class="fas fa-forward text-primary me-2"></i>"Next step"</li>
+                            <li><i class="fas fa-backward text-secondary me-2"></i>"Previous step"</li>
+                            <li><i class="fas fa-redo text-warning me-2"></i>"Repeat step"</li>
+                            <li><i class="fas fa-clock text-info me-2"></i>"Set timer for [time]"</li>
+                            <li><i class="fas fa-list text-success me-2"></i>"What are the ingredients?"</li>
+                            <li><i class="fas fa-filter text-purple me-2"></i>"Show vegan recipes"</li>
+                            <li><i class="fas fa-question text-info me-2"></i>"What can I cook with potatoes?"</li>
+                            <li><i class="fas fa-stop text-danger me-2"></i>"Stop cooking"</li>
+                        </ul>
+                    </div>
+                    <div class="col-md-6">
+                        <h6>Current Status:</h6>
+                        <div id="currentStatus">
+                            <p class="text-muted">No active recipe</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Quick Actions -->
+<div class="row mb-4">
+    <div class="col-md-3 mb-3">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-body text-center">
+                <div class="bg-primary bg-opacity-10 rounded-circle p-3 d-inline-block mb-3">
+                    <i class="fas fa-search fa-2x text-primary"></i>
+                </div>
+                <h5 class="card-title">Search Recipes</h5>
+                <p class="card-text small">Find recipes by name or category</p>
+                <a href="{{ url_for('search') }}" class="btn btn-outline-primary btn-sm">Search</a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3 mb-3">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-body text-center">
+                <div class="bg-success bg-opacity-10 rounded-circle p-3 d-inline-block mb-3">
+                    <i class="fas fa-plus fa-2x text-success"></i>
+                </div>
+                <h5 class="card-title">Add Recipe</h5>
+                <p class="card-text small">Create a new recipe</p>
+                {% if current_user.is_admin %}
+                <a href="{{ url_for('add_recipe') }}" class="btn btn-outline-success btn-sm">Add Recipe</a>
+                {% else %}
+                <button class="btn btn-outline-secondary btn-sm" disabled>Admin Only</button>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3 mb-3">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-body text-center">
+                <div class="bg-warning bg-opacity-10 rounded-circle p-3 d-inline-block mb-3">
+                    <i class="fas fa-history fa-2x text-warning"></i>
+                </div>
+                <h5 class="card-title">Recent Recipes</h5>
+                <p class="card-text small">View your cooking history</p>
+                <a href="#recentRecipes" class="btn btn-outline-warning btn-sm">View</a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3 mb-3">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-body text-center">
+                <div class="bg-info bg-opacity-10 rounded-circle p-3 d-inline-block mb-3">
+                    <i class="fas fa-cog fa-2x text-info"></i>
+                </div>
+                <h5 class="card-title">Settings</h5>
+                <p class="card-text small">Manage your preferences</p>
+                <button class="btn btn-outline-info btn-sm" disabled>Coming Soon</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- My Recipes Section -->
+{% if user_recipes %}
+<div class="row mb-4">
+    <div class="col-12">
+        <h3 class="fw-bold mb-3">
+            <i class="fas fa-book me-2"></i>My Recipes
+        </h3>
+        <div class="row">
+            {% for recipe in user_recipes %}
+            <div class="col-lg-4 col-md-6 mb-3">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <h6 class="card-title mb-0">{{ recipe.title }}</h6>
+                            <span class="badge bg-primary">{{ recipe.category }}</span>
+                        </div>
+                        <p class="card-text small text-muted">
+                            {{ recipe.ingredients[:80] }}{% if recipe.ingredients|length > 80 %}...{% endif %}
+                        </p>
+                        <div class="d-flex gap-2">
+                            <a href="{{ url_for('recipe', recipe_id=recipe.id) }}" class="btn btn-outline-primary btn-sm">
+                                <i class="fas fa-eye me-1"></i>View
+                            </a>
+                            <a href="{{ url_for('recipe_step', recipe_id=recipe.id, step_number=1) }}" class="btn btn-success btn-sm">
+                                <i class="fas fa-play me-1"></i>Start Cooking
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<!-- All Recipes Section -->
+<div class="row">
+    <div class="col-12">
+        <h3 class="fw-bold mb-3">
+            <i class="fas fa-utensils me-2"></i>All Recipes
+        </h3>
+        <div class="row">
+            {% for recipe in all_recipes %}
+            <div class="col-lg-4 col-md-6 mb-3">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <h6 class="card-title mb-0">{{ recipe.title }}</h6>
+                            <span class="badge bg-secondary">{{ recipe.category }}</span>
+                        </div>
+                        <p class="card-text small text-muted">
+                            {{ recipe.ingredients[:80] }}{% if recipe.ingredients|length > 80 %}...{% endif %}
+                        </p>
+                        {% if recipe.dietary_tags %}
+                        <div class="mb-2">
+                            {% for tag in recipe.dietary_tags.split(',') %}
+                            <span class="badge bg-light text-dark me-1">{{ tag.strip() }}</span>
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                        <div class="d-flex gap-2">
+                            <a href="{{ url_for('recipe', recipe_id=recipe.id) }}" class="btn btn-outline-primary btn-sm">
+                                <i class="fas fa-eye me-1"></i>View
+                            </a>
+                            <a href="{{ url_for('recipe_step', recipe_id=recipe.id, step_number=1) }}" class="btn btn-success btn-sm">
+                                <i class="fas fa-play me-1"></i>Start Cooking
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const voiceAssistantBtn = document.getElementById('voiceAssistantBtn');
+    const voiceModal = new bootstrap.Modal(document.getElementById('voiceModal'));
+    const startVoiceBtn = document.getElementById('startVoiceBtn');
+    const voiceStatus = document.getElementById('voiceStatus');
+    const voiceResponse = document.getElementById('voiceResponse');
+    const responseText = document.getElementById('responseText');
+    const responseAudio = document.getElementById('responseAudio');
+    
+    // Voice assistant button
+    voiceAssistantBtn.addEventListener('click', function() {
+        voiceModal.show();
+    });
+    
+    // Start voice recognition
+    startVoiceBtn.addEventListener('click', function() {
+        startVoiceRecognition();
+    });
+    
+    function startVoiceRecognition() {
+        voiceStatus.textContent = 'Listening... Speak now!';
+        startVoiceBtn.classList.add('btn-danger');
+        startVoiceBtn.classList.remove('btn-primary');
+        
+        // Simulate voice recognition (in real implementation, this would use Web Speech API)
+        setTimeout(() => {
+            // Simulate processing
+            voiceStatus.textContent = 'Processing...';
+            
+            setTimeout(() => {
+                // Simulate response
+                const mockResponse = {
+                    text: "next step",
+                    intent: "next_step",
+                    message: "Moving to the next step of your recipe.",
+                    audio_url: null
+                };
+                
+                displayVoiceResponse(mockResponse);
+                
+                // Reset button
+                startVoiceBtn.classList.remove('btn-danger');
+                startVoiceBtn.classList.add('btn-primary');
+                voiceStatus.textContent = 'Click the microphone to start voice recognition';
+            }, 2000);
+        }, 3000);
+    }
+    
+    function displayVoiceResponse(response) {
+        responseText.textContent = response.message;
+        voiceResponse.classList.remove('d-none');
+        
+        if (response.audio_url) {
+            responseAudio.src = response.audio_url;
+            responseAudio.style.display = 'block';
+        } else {
+            responseAudio.style.display = 'none';
+        }
+    }
+});
+</script>
+{% endblock %} 

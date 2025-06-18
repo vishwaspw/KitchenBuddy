@@ -1,0 +1,169 @@
+{% extends "base.html" %}
+
+{% block title %}KitchenBuddy - AI Cooking Assistant{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<div class="row align-items-center py-5">
+    <div class="col-lg-6">
+        <h1 class="display-4 fw-bold text-primary mb-4">
+            <i class="fas fa-utensils me-3"></i>KitchenBuddy
+        </h1>
+        <p class="lead mb-4">
+            Your AI-powered cooking assistant that helps you create delicious meals with voice commands and step-by-step guidance.
+        </p>
+        <div class="d-flex gap-3">
+            {% if current_user.is_authenticated %}
+            <a href="{{ url_for('dashboard') }}" class="btn btn-primary btn-lg">
+                <i class="fas fa-tachometer-alt me-2"></i>Go to Dashboard
+            </a>
+            {% else %}
+            <a href="{{ url_for('signup') }}" class="btn btn-primary btn-lg">
+                <i class="fas fa-user-plus me-2"></i>Get Started
+            </a>
+            <a href="{{ url_for('login') }}" class="btn btn-outline-primary btn-lg">
+                <i class="fas fa-sign-in-alt me-2"></i>Login
+            </a>
+            {% endif %}
+        </div>
+    </div>
+    <div class="col-lg-6 text-center">
+        <div class="position-relative">
+            <div class="bg-primary bg-opacity-10 rounded-circle p-5 d-inline-block">
+                <i class="fas fa-microphone fa-5x text-primary"></i>
+            </div>
+            <div class="position-absolute top-0 start-100 translate-middle">
+                <div class="bg-success bg-opacity-10 rounded-circle p-3">
+                    <i class="fas fa-robot fa-2x text-success"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Features Section -->
+<div class="row py-5">
+    <div class="col-12 text-center mb-5">
+        <h2 class="fw-bold">Why Choose KitchenBuddy?</h2>
+        <p class="text-muted">Experience the future of cooking with AI assistance</p>
+    </div>
+    
+    <div class="col-md-4 mb-4">
+        <div class="card h-100 border-0 shadow-sm">
+            <div class="card-body text-center p-4">
+                <div class="bg-primary bg-opacity-10 rounded-circle p-3 d-inline-block mb-3">
+                    <i class="fas fa-microphone fa-2x text-primary"></i>
+                </div>
+                <h5 class="card-title">Voice Commands</h5>
+                <p class="card-text">Control your cooking experience with natural voice commands. Say "next step" or "repeat that" to navigate through recipes hands-free.</p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4 mb-4">
+        <div class="card h-100 border-0 shadow-sm">
+            <div class="card-body text-center p-4">
+                <div class="bg-success bg-opacity-10 rounded-circle p-3 d-inline-block mb-3">
+                    <i class="fas fa-robot fa-2x text-success"></i>
+                </div>
+                <h5 class="card-title">AI Assistant</h5>
+                <p class="card-text">Our intelligent assistant understands cooking context and provides helpful guidance throughout your culinary journey.</p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4 mb-4">
+        <div class="card h-100 border-0 shadow-sm">
+            <div class="card-body text-center p-4">
+                <div class="bg-warning bg-opacity-10 rounded-circle p-3 d-inline-block mb-3">
+                    <i class="fas fa-book fa-2x text-warning"></i>
+                </div>
+                <h5 class="card-title">Recipe Library</h5>
+                <p class="card-text">Access a growing collection of recipes with detailed ingredients, step-by-step instructions, and dietary information.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Featured Recipes Section -->
+{% if recipes %}
+<div class="row py-5">
+    <div class="col-12 text-center mb-5">
+        <h2 class="fw-bold">Featured Recipes</h2>
+        <p class="text-muted">Discover delicious recipes to get you started</p>
+    </div>
+    
+    {% for recipe in recipes %}
+    <div class="col-lg-4 col-md-6 mb-4">
+        <div class="card h-100 border-0 shadow-sm recipe-card">
+            <div class="card-body p-4">
+                <div class="d-flex justify-content-between align-items-start mb-3">
+                    <h5 class="card-title mb-0">{{ recipe.title }}</h5>
+                    <span class="badge bg-primary">{{ recipe.category }}</span>
+                </div>
+                <p class="card-text text-muted small">
+                    <i class="fas fa-list me-1"></i>
+                    {{ recipe.ingredients[:100] }}{% if recipe.ingredients|length > 100 %}...{% endif %}
+                </p>
+                {% if recipe.dietary_tags %}
+                <div class="mb-3">
+                    {% for tag in recipe.dietary_tags.split(',') %}
+                    <span class="badge bg-light text-dark me-1">{{ tag.strip() }}</span>
+                    {% endfor %}
+                </div>
+                {% endif %}
+                <a href="{{ url_for('recipe', recipe_id=recipe.id) }}" class="btn btn-outline-primary btn-sm">
+                    <i class="fas fa-eye me-1"></i>View Recipe
+                </a>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
+
+<!-- Voice Assistant Demo -->
+<div class="row py-5 bg-light rounded">
+    <div class="col-12 text-center">
+        <h3 class="fw-bold mb-4">Try Our Voice Assistant</h3>
+        <p class="text-muted mb-4">Click the microphone button and try saying commands like:</p>
+        
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="d-flex flex-wrap justify-content-center gap-2 mb-4">
+                    <span class="badge bg-primary p-2">"Start recipe"</span>
+                    <span class="badge bg-primary p-2">"Next step"</span>
+                    <span class="badge bg-primary p-2">"Repeat that"</span>
+                    <span class="badge bg-primary p-2">"Stop cooking"</span>
+                </div>
+                
+                {% if current_user.is_authenticated %}
+                <button id="voiceBtn" class="btn btn-primary btn-lg rounded-circle p-4">
+                    <i class="fas fa-microphone fa-2x"></i>
+                </button>
+                <p class="mt-3 text-muted small">Click to start voice recognition</p>
+                {% else %}
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle me-2"></i>
+                    Please <a href="{{ url_for('login') }}" class="alert-link">login</a> to use the voice assistant feature.
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const voiceBtn = document.getElementById('voiceBtn');
+    if (voiceBtn) {
+        voiceBtn.addEventListener('click', function() {
+            // Voice button functionality will be implemented in main.js
+            console.log('Voice button clicked');
+        });
+    }
+});
+</script>
+{% endblock %} 

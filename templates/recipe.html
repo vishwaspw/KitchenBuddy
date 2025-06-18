@@ -1,0 +1,205 @@
+{% extends "base.html" %}
+
+{% block title %}{{ recipe.title }} - KitchenBuddy{% endblock %}
+
+{% block content %}
+<!-- Recipe Header -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="bg-light rounded p-4">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <h1 class="fw-bold text-primary mb-2">{{ recipe.title }}</h1>
+                    <div class="d-flex align-items-center gap-3 mb-3">
+                        <span class="badge bg-primary fs-6">{{ recipe.category }}</span>
+                        {% if recipe.dietary_tags %}
+                        {% for tag in recipe.dietary_tags.split(',') %}
+                        <span class="badge bg-success">{{ tag.strip() }}</span>
+                        {% endfor %}
+                        {% endif %}
+                    </div>
+                    <p class="text-muted mb-0">
+                        <i class="fas fa-user me-1"></i>Created by {{ recipe.user.username }}
+                        <span class="mx-2">•</span>
+                        <i class="fas fa-calendar me-1"></i>{{ recipe.created_at.strftime('%B %d, %Y') }}
+                    </p>
+                </div>
+                <div class="col-md-4 text-md-end">
+                    {% if current_user.is_authenticated %}
+                    <a href="{{ url_for('recipe_step', recipe_id=recipe.id, step_number=1) }}" class="btn btn-success btn-lg">
+                        <i class="fas fa-play me-2"></i>Start Cooking
+                    </a>
+                    {% else %}
+                    <a href="{{ url_for('login') }}" class="btn btn-outline-primary btn-lg">
+                        <i class="fas fa-sign-in-alt me-2"></i>Login to Cook
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Recipe Content -->
+<div class="row">
+    <!-- Ingredients -->
+    <div class="col-lg-4 mb-4">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">
+                    <i class="fas fa-list me-2"></i>Ingredients
+                </h5>
+            </div>
+            <div class="card-body">
+                <ul class="list-unstyled">
+                    {% for ingredient in recipe.ingredients.split('\n') %}
+                    {% if ingredient.strip() %}
+                    <li class="mb-2">
+                        <i class="fas fa-check text-success me-2"></i>
+                        {{ ingredient.strip() }}
+                    </li>
+                    {% endif %}
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Cooking Steps -->
+    <div class="col-lg-8">
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">
+                    <i class="fas fa-utensils me-2"></i>Cooking Steps
+                </h5>
+                {% if current_user.is_authenticated %}
+                <button id="voiceRecordBtn" class="btn btn-light btn-sm">
+                    <i class="fas fa-microphone me-1"></i>Voice Control
+                </button>
+                {% endif %}
+            </div>
+            <div class="card-body">
+                {% if steps %}
+                <div class="cooking-steps">
+                    {% for step in steps %}
+                    <div class="step-item mb-4 p-3 border rounded" data-step="{{ step.step_number }}">
+                        <div class="d-flex align-items-start">
+                            <div class="step-number me-3">
+                                <span class="badge bg-primary rounded-circle p-2">{{ step.step_number }}</span>
+                            </div>
+                            <div class="step-content flex-grow-1">
+                                <p class="mb-0 fs-5">{{ step.instruction }}</p>
+                            </div>
+                            {% if current_user.is_authenticated %}
+                            <div class="step-actions ms-2">
+                                <a href="{{ url_for('recipe_step', recipe_id=recipe.id, step_number=step.step_number) }}" 
+                                   class="btn btn-outline-primary btn-sm">
+                                    <i class="fas fa-play"></i>
+                                </a>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                
+                <!-- Cooking Progress -->
+                {% if current_user.is_authenticated %}
+                <div class="cooking-progress mt-4 p-3 bg-light rounded">
+                    <h6 class="mb-3">
+                        <i class="fas fa-chart-line me-2"></i>Cooking Progress
+                    </h6>
+                    <div class="progress mb-3" style="height: 25px;">
+                        <div class="progress-bar bg-success" role="progressbar" style="width: 0%">
+                            0 / {{ steps|length }} steps
+                        </div>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span class="text-muted">Current Step: <span id="currentStepNumber">-</span></span>
+                        <div class="btn-group">
+                            <a href="{{ url_for('recipe_step', recipe_id=recipe.id, step_number=1) }}" 
+                               class="btn btn-primary btn-sm">
+                                Start Cooking<i class="fas fa-play ms-1"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+                
+                {% else %}
+                <div class="text-center py-4">
+                    <i class="fas fa-exclamation-triangle fa-3x text-warning mb-3"></i>
+                    <h5>No steps available</h5>
+                    <p class="text-muted">This recipe doesn't have any cooking steps yet.</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Voice Control Modal -->
+{% if current_user.is_authenticated %}
+<div class="modal fade" id="voiceControlModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="fas fa-microphone me-2"></i>Voice Control
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="text-center mb-4">
+                    <button id="voiceListenBtn" class="btn btn-primary btn-lg rounded-circle p-4 mb-3">
+                        <i class="fas fa-microphone fa-2x"></i>
+                    </button>
+                    <p id="voiceStatus" class="text-muted">Click to start voice recognition</p>
+                </div>
+                
+                <div id="voiceResponse" class="alert alert-info d-none">
+                    <h6>Response:</h6>
+                    <p id="responseText"></p>
+                    <audio id="responseAudio" controls class="w-100 d-none"></audio>
+                </div>
+                
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6>Voice Commands:</h6>
+                        <ul class="list-unstyled">
+                            <li><i class="fas fa-play text-success me-2"></i>"Next step"</li>
+                            <li><i class="fas fa-redo text-warning me-2"></i>"Repeat step"</li>
+                            <li><i class="fas fa-stop text-danger me-2"></i>"Stop cooking"</li>
+                            <li><i class="fas fa-volume-up text-info me-2"></i>"Read step"</li>
+                        </ul>
+                    </div>
+                    <div class="col-md-6">
+                        <h6>Current Status:</h6>
+                        <div id="currentStatus">
+                            <p class="text-muted">Ready to start cooking</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/mic.js') }}"></script>
+<script>
+// Minimal JavaScript for voice control modal
+document.addEventListener('DOMContentLoaded', function() {
+    const voiceControlBtn = document.getElementById('voiceControlBtn');
+    const voiceControlModal = new bootstrap.Modal(document.getElementById('voiceControlModal'));
+    
+    if (voiceControlBtn) {
+        voiceControlBtn.addEventListener('click', function() {
+            voiceControlModal.show();
+        });
+    }
+});
+</script>
+{% endblock %} 

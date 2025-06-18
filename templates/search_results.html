@@ -1,0 +1,213 @@
+{% extends "base.html" %}
+
+{% block title %}Search Results - KitchenBuddy{% endblock %}
+
+{% block content %}
+<!-- Search Header -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="bg-info bg-opacity-10 rounded p-4">
+            <h2 class="fw-bold text-info mb-2">
+                <i class="fas fa-search me-2"></i>Search Results
+            </h2>
+            {% if query or category %}
+            <p class="mb-0">
+                {% if query and category %}
+                Showing recipes for "{{ query }}" in {{ category }} category
+                {% elif query %}
+                Showing recipes for "{{ query }}"
+                {% elif category %}
+                Showing recipes in {{ category }} category
+                {% endif %}
+                <span class="badge bg-info ms-2">{{ recipes|length }} found</span>
+            </p>
+            {% else %}
+            <p class="mb-0">Showing all recipes</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- Search Filters -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card border-0 shadow-sm">
+            <div class="card-body">
+                <form method="GET" action="{{ url_for('search') }}" class="row g-3">
+                    <div class="col-md-6">
+                        <label for="q" class="form-label">Search Recipes</label>
+                        <input type="text" class="form-control" id="q" name="q" 
+                               value="{{ query }}" placeholder="Search by recipe name...">
+                    </div>
+                    <div class="col-md-4">
+                        <label for="category" class="form-label">Category</label>
+                        <select class="form-select" id="category" name="category">
+                            <option value="">All Categories</option>
+                            <option value="Breakfast" {% if category == 'Breakfast' %}selected{% endif %}>Breakfast</option>
+                            <option value="Lunch" {% if category == 'Lunch' %}selected{% endif %}>Lunch</option>
+                            <option value="Dinner" {% if category == 'Dinner' %}selected{% endif %}>Dinner</option>
+                            <option value="Dessert" {% if category == 'Dessert' %}selected{% endif %}>Dessert</option>
+                            <option value="Snack" {% if category == 'Snack' %}selected{% endif %}>Snack</option>
+                            <option value="Appetizer" {% if category == 'Appetizer' %}selected{% endif %}>Appetizer</option>
+                            <option value="Soup" {% if category == 'Soup' %}selected{% endif %}>Soup</option>
+                            <option value="Salad" {% if category == 'Salad' %}selected{% endif %}>Salad</option>
+                            <option value="Bread" {% if category == 'Bread' %}selected{% endif %}>Bread</option>
+                            <option value="Beverage" {% if category == 'Beverage' %}selected{% endif %}>Beverage</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label">&nbsp;</label>
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-search me-1"></i>Search
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Search Results -->
+{% if recipes %}
+<div class="row">
+    {% for recipe in recipes %}
+    <div class="col-lg-4 col-md-6 mb-4">
+        <div class="card h-100 border-0 shadow-sm recipe-card">
+            <div class="card-body p-4">
+                <div class="d-flex justify-content-between align-items-start mb-3">
+                    <h5 class="card-title mb-0">{{ recipe.title }}</h5>
+                    <span class="badge bg-primary">{{ recipe.category }}</span>
+                </div>
+                
+                <p class="card-text text-muted small mb-3">
+                    <i class="fas fa-list me-1"></i>
+                    {{ recipe.ingredients[:100] }}{% if recipe.ingredients|length > 100 %}...{% endif %}
+                </p>
+                
+                {% if recipe.dietary_tags %}
+                <div class="mb-3">
+                    {% for tag in recipe.dietary_tags.split(',') %}
+                    <span class="badge bg-light text-dark me-1">{{ tag.strip() }}</span>
+                    {% endfor %}
+                </div>
+                {% endif %}
+                
+                <div class="d-flex justify-content-between align-items-center">
+                    <small class="text-muted">
+                        <i class="fas fa-user me-1"></i>{{ recipe.user.username }}
+                    </small>
+                    <div class="btn-group">
+                        <a href="{{ url_for('recipe', recipe_id=recipe.id) }}" class="btn btn-outline-primary btn-sm">
+                            <i class="fas fa-eye me-1"></i>View
+                        </a>
+                        {% if current_user.is_authenticated %}
+                        <a href="{{ url_for('recipe_step', recipe_id=recipe.id, step_number=1) }}" class="btn btn-success btn-sm">
+                            <i class="fas fa-play me-1"></i>Cook
+                        </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+<!-- Pagination (Future Enhancement) -->
+<div class="row">
+    <div class="col-12">
+        <nav aria-label="Recipe search results">
+            <ul class="pagination justify-content-center">
+                <li class="page-item disabled">
+                    <span class="page-link">Previous</span>
+                </li>
+                <li class="page-item active">
+                    <span class="page-link">1</span>
+                </li>
+                <li class="page-item disabled">
+                    <span class="page-link">Next</span>
+                </li>
+            </ul>
+        </nav>
+    </div>
+</div>
+
+{% else %}
+<!-- No Results -->
+<div class="row">
+    <div class="col-12">
+        <div class="text-center py-5">
+            <i class="fas fa-search fa-4x text-muted mb-4"></i>
+            <h3>No recipes found</h3>
+            <p class="text-muted mb-4">
+                {% if query or category %}
+                Try adjusting your search terms or browse all recipes.
+                {% else %}
+                No recipes are available yet. Check back later!
+                {% endif %}
+            </p>
+            <div class="d-flex justify-content-center gap-3">
+                <a href="{{ url_for('index') }}" class="btn btn-primary">
+                    <i class="fas fa-home me-2"></i>Go Home
+                </a>
+                {% if current_user.is_authenticated %}
+                <a href="{{ url_for('dashboard') }}" class="btn btn-outline-primary">
+                    <i class="fas fa-tachometer-alt me-2"></i>Dashboard
+                </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<!-- Search Suggestions -->
+{% if query and not recipes %}
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-light">
+                <h6 class="mb-0">
+                    <i class="fas fa-lightbulb me-2"></i>Search Suggestions
+                </h6>
+            </div>
+            <div class="card-body">
+                <p class="mb-3">Try these search tips:</p>
+                <ul class="list-unstyled">
+                    <li><i class="fas fa-check text-success me-2"></i>Use shorter, simpler terms</li>
+                    <li><i class="fas fa-check text-success me-2"></i>Try different spellings</li>
+                    <li><i class="fas fa-check text-success me-2"></i>Search by ingredient name</li>
+                    <li><i class="fas fa-check text-success me-2"></i>Use category filters</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Auto-submit form when category changes
+    const categorySelect = document.getElementById('category');
+    if (categorySelect) {
+        categorySelect.addEventListener('change', function() {
+            this.closest('form').submit();
+        });
+    }
+    
+    // Highlight search terms in results
+    const searchQuery = '{{ query }}';
+    if (searchQuery) {
+        const recipeTitles = document.querySelectorAll('.card-title');
+        recipeTitles.forEach(title => {
+            const regex = new RegExp(`(${searchQuery})`, 'gi');
+            title.innerHTML = title.textContent.replace(regex, '<mark>$1</mark>');
+        });
+    }
+});
+</script>
+{% endblock %} 
