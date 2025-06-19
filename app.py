@@ -842,7 +842,8 @@ def populate_db_route():
 def create_admin():
     from models.db_models import User
     from werkzeug.security import generate_password_hash
-    if not User.query.filter_by(username='admin').first():
+    admin = User.query.filter_by(username='admin').first()
+    if not admin:
         admin = User(
             username='admin',
             email='admin@example.com',
@@ -850,9 +851,11 @@ def create_admin():
             is_admin=True
         )
         db.session.add(admin)
-        db.session.commit()
-        return "Admin user created! Username: admin, Password: admin123"
-    return "Admin user already exists."
+    else:
+        admin.password_hash = generate_password_hash('admin123')
+        admin.is_admin = True
+    db.session.commit()
+    return "Admin user now has username: admin and password: admin123"
 
 if __name__ == '__main__':
     with app.app_context():
