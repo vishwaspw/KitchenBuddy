@@ -1,18 +1,13 @@
-import spacy
 import re
 from difflib import SequenceMatcher
 from models.db_models import Recipe
 
 class IntentDetector:
     def __init__(self):
-        # Load spaCy model (fallback to English if not available)
-        try:
-            self.nlp = spacy.load("en_core_web_sm")
-        except OSError:
-            # If spaCy model is not installed, use simple keyword matching
-            self.nlp = None
-            print("spaCy model not found. Using simple keyword matching.")
-    
+        # Only use simple keyword matching; spaCy removed for deployment compatibility
+        self.nlp = None
+        print("spaCy removed. Using simple keyword matching only.")
+
     def detect_intent(self, text):
         """
         Detect cooking-related intents from text
@@ -100,65 +95,20 @@ class IntentDetector:
                 r'\b(support|assist)\b'
             ]
         }
-        
         # Check each intent pattern
         for intent, patterns in intent_patterns.items():
             for pattern in patterns:
                 if re.search(pattern, text):
                     return intent
-        
-        # If using spaCy, try more sophisticated analysis
-        if self.nlp:
-            return self._analyze_with_spacy(text)
-        
         return "unknown"
-    
-    def _analyze_with_spacy(self, text):
-        """
-        Use spaCy for more sophisticated intent detection
-        """
-        doc = self.nlp(text)
-        
-        # Extract key words and their parts of speech
-        verbs = [token.lemma_ for token in doc if token.pos_ == "VERB"]
-        nouns = [token.lemma_ for token in doc if token.pos_ == "NOUN"]
-        
-        # Cooking-related verbs
-        cooking_verbs = ['start', 'begin', 'cook', 'make', 'prepare', 'continue', 'stop', 'finish', 'repeat', 'search']
-        cooking_nouns = ['recipe', 'step', 'ingredient', 'dish', 'meal', 'food', 'timer', 'timer']
-        
-        # Check for cooking-related content
-        if any(verb in cooking_verbs for verb in verbs):
-            if any(noun in cooking_nouns for noun in nouns):
-                # Determine specific intent based on context
-                if any(word in text for word in ['next', 'continue', 'proceed']):
-                    return 'next_step'
-                elif any(word in text for word in ['previous', 'back', 'last']):
-                    return 'prev_step'
-                elif any(word in text for word in ['repeat', 'again', 'hear']):
-                    return 'repeat_step'
-                elif any(word in text for word in ['current', 'what step', 'where']):
-                    return 'current_step'
-                elif any(word in text for word in ['stop', 'end', 'finish', 'done']):
-                    return 'stop_cooking'
-                elif any(word in text for word in ['start', 'begin', 'cook', 'make']):
-                    return 'start_recipe'
-                elif any(word in text for word in ['search', 'find', 'look']):
-                    return 'search_recipe'
-        
-        return "unknown"
-    
+
     def extract_recipe_name(self, text):
         """
         Extract recipe name from text using fuzzy matching
         """
         if not text:
             return None
-        
-        # Simple pattern matching for recipe names
         text = text.lower()
-        
-        # Look for patterns like "recipe for X" or "how to make X"
         patterns = [
             r'recipe for (.+)',
             r'how to make (.+)',
@@ -169,75 +119,56 @@ class IntentDetector:
             r'begin (.+)',
             r'open (.+)'
         ]
-        
         extracted_name = None
         for pattern in patterns:
             match = re.search(pattern, text)
             if match:
                 extracted_name = match.group(1).strip()
                 break
-        
         if not extracted_name:
-            # Try to extract recipe name from the end of the sentence
             words = text.split()
             if len(words) >= 2:
-                # Look for common recipe indicators
                 recipe_indicators = ['recipe', 'dish', 'meal', 'food']
                 for i, word in enumerate(words):
                     if word in recipe_indicators and i + 1 < len(words):
                         extracted_name = ' '.join(words[i+1:])
                         break
-        
         if extracted_name:
-            # Clean up the extracted name
             extracted_name = re.sub(r'\b(recipe|dish|meal|food|for|the|a|an)\b', '', extracted_name).strip()
             return extracted_name if extracted_name else None
-        
         return None
-    
+
     def find_recipe_by_name(self, recipe_name, recipes=None):
         """
         Find recipe by name using fuzzy matching
         """
         if not recipe_name:
             return None
-        
         if recipes is None:
             recipes = Recipe.query.all()
-        
         best_match = None
         best_ratio = 0
-        
         for recipe in recipes:
-            # Try exact match first
             if recipe.title.lower() == recipe_name.lower():
                 return recipe
-            
-            # Try partial match
             if recipe_name.lower() in recipe.title.lower():
                 ratio = len(recipe_name) / len(recipe.title)
                 if ratio > best_ratio:
                     best_ratio = ratio
                     best_match = recipe
-            
-            # Try fuzzy matching
             ratio = SequenceMatcher(None, recipe_name.lower(), recipe.title.lower()).ratio()
-            if ratio > best_ratio and ratio > 0.6:  # Threshold for fuzzy matching
+            if ratio > best_ratio and ratio > 0.6:
                 best_ratio = ratio
                 best_match = recipe
-        
         return best_match
-    
+
     def extract_timer_duration(self, text):
         """
         Extract timer duration from text
         """
         if not text:
             return 5  # Default 5 minutes
-        
         text = text.lower()
-        
-        # Look for specific time patterns
         time_patterns = {
             r'(\d+)\s*minutes?': lambda x: int(x),
             r'(\d+)\s*mins?': lambda x: int(x),
@@ -250,7 +181,6 @@ class IntentDetector:
             r'(\d+)\s*hours?': lambda x: int(x) * 60,
             r'(\d+)\s*hrs?': lambda x: int(x) * 60
         }
-        
         for pattern, converter in time_patterns.items():
             match = re.search(pattern, text)
             if match:
@@ -263,18 +193,15 @@ class IntentDetector:
                         return converter(match.group(1))
                 except (ValueError, IndexError):
                     continue
-        
         return 5  # Default 5 minutes
-    
+
     def extract_dietary_preference(self, text):
         """
         Extract dietary preference from text
         """
         if not text:
             return None
-        
         text = text.lower()
-        
         dietary_keywords = {
             'vegan': ['vegan', 'no animal products'],
             'vegetarian': ['vegetarian', 'no meat', 'meatless'],
@@ -285,9 +212,7 @@ class IntentDetector:
             'low-sodium': ['low sodium', 'low-sodium', 'no salt'],
             'low-fat': ['low fat', 'low-fat', 'fat-free']
         }
-        
         for preference, keywords in dietary_keywords.items():
             if any(keyword in text for keyword in keywords):
                 return preference
-        
         return None 
