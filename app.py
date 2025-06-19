@@ -838,6 +838,22 @@ def populate_db_route():
     from models.db_models import Recipe
     return f"Database populated! Recipe count: {Recipe.query.count()}"
 
+@app.route('/create_admin')
+def create_admin():
+    from models.db_models import User
+    from werkzeug.security import generate_password_hash
+    if not User.query.filter_by(username='admin').first():
+        admin = User(
+            username='admin',
+            email='admin@example.com',
+            password_hash=generate_password_hash('admin123'),
+            is_admin=True
+        )
+        db.session.add(admin)
+        db.session.commit()
+        return "Admin user created! Username: admin, Password: admin123"
+    return "Admin user already exists."
+
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()
