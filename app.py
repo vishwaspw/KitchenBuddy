@@ -933,6 +933,197 @@ def populate_all():
                     'Top with microgreens or sprouts for extra nutrition and presentation.',
                     'Serve immediately while the toast is still warm and crispy.'
                 ]
+            },
+            {
+                'title': 'Spaghetti Carbonara',
+                'category': 'Main Course',
+                'ingredients': '''200g spaghetti\n100g pancetta\n2 large eggs\n50g pecorino cheese\n50g parmesan\n2 cloves garlic, peeled\nSalt and black pepper to taste''',
+                'dietary_tags': 'non-vegetarian,contains-dairy',
+                'steps': [
+                    'Cook spaghetti in salted boiling water until al dente.',
+                    'Fry pancetta with garlic until crisp, then remove garlic.',
+                    'Beat eggs and mix with grated cheeses.',
+                    'Drain pasta and combine with pancetta.',
+                    'Remove from heat, add egg and cheese mixture, and toss quickly.',
+                    'Season with salt and pepper, serve immediately.'
+                ]
+            },
+            {
+                'title': 'Margherita Pizza',
+                'category': 'Main Course',
+                'ingredients': '''1 pizza dough base\n100g tomato sauce\n125g mozzarella cheese\nFresh basil leaves\n2 tbsp olive oil\nSalt to taste''',
+                'dietary_tags': 'vegetarian,contains-dairy',
+                'steps': [
+                    'Preheat oven to 250°C (480°F).',
+                    'Spread tomato sauce over the pizza base.',
+                    'Add sliced mozzarella and drizzle with olive oil.',
+                    'Bake for 10-12 minutes until crust is golden.',
+                    'Top with fresh basil leaves and serve hot.'
+                ]
+            },
+            {
+                'title': 'Pancakes',
+                'category': 'Breakfast',
+                'ingredients': '''1 cup all-purpose flour\n2 tbsp sugar\n2 tsp baking powder\nPinch of salt\n1 cup milk\n1 egg\n2 tbsp melted butter\nMaple syrup to serve''',
+                'dietary_tags': 'vegetarian,contains-dairy',
+                'steps': [
+                    'Mix flour, sugar, baking powder, and salt in a bowl.',
+                    'Whisk milk, egg, and melted butter in another bowl.',
+                    'Combine wet and dry ingredients until just mixed.',
+                    'Heat a non-stick pan and pour batter to form pancakes.',
+                    'Cook until bubbles form, flip and cook until golden.',
+                    'Serve warm with maple syrup.'
+                ]
+            },
+            {
+                'title': 'Chicken Caesar Salad',
+                'category': 'Salad',
+                'ingredients': '''2 chicken breasts\n1 romaine lettuce\n50g parmesan cheese\n1 cup croutons\nCaesar dressing\nSalt and pepper to taste''',
+                'dietary_tags': 'non-vegetarian,contains-dairy',
+                'steps': [
+                    'Season and grill chicken breasts, then slice.',
+                    'Chop romaine lettuce and place in a bowl.',
+                    'Add sliced chicken, croutons, and shaved parmesan.',
+                    'Drizzle with Caesar dressing and toss gently.',
+                    'Serve immediately.'
+                ]
+            },
+            {
+                'title': 'Tacos',
+                'category': 'Main Course',
+                'ingredients': '''8 small tortillas\n250g ground beef or chicken\n1 onion, chopped\n1 tomato, diced\nLettuce, shredded\nCheddar cheese, grated\nTaco seasoning\nSour cream and salsa to serve''',
+                'dietary_tags': 'non-vegetarian,contains-dairy',
+                'steps': [
+                    'Cook ground meat with taco seasoning and chopped onion.',
+                    'Warm tortillas in a pan.',
+                    'Fill tortillas with meat, lettuce, tomato, and cheese.',
+                    'Top with sour cream and salsa.',
+                    'Serve immediately.'
+                ]
+            },
+            {
+                'title': 'Palak Paneer',
+                'category': 'Main Course',
+                'ingredients': '''200g paneer\n300g spinach\n2 onions\n2 tomatoes\n2 green chilies\n1 tsp ginger-garlic paste\n1 tsp cumin seeds\n1 tsp garam masala\nSalt to taste''',
+                'dietary_tags': 'vegetarian,gluten-free',
+                'steps': [
+                    'Blanch spinach and blend to a puree.',
+                    'Fry cumin seeds, onions, and ginger-garlic paste.',
+                    'Add tomatoes and cook until soft.',
+                    'Add spinach puree and spices, cook for 5 minutes.',
+                    'Add paneer cubes and simmer for 5 minutes.',
+                    'Serve hot with naan or rice.'
+                ]
+            },
+            {
+                'title': 'Beef Stroganoff',
+                'category': 'Main Course',
+                'ingredients': '''500g beef sirloin\n1 onion\n200g mushrooms\n1 cup sour cream\n2 tbsp flour\n2 tbsp butter\n1 cup beef broth\nSalt and pepper to taste''',
+                'dietary_tags': 'non-vegetarian,contains-dairy',
+                'steps': [
+                    'Slice beef and brown in butter.',
+                    'Remove beef, sauté onions and mushrooms.',
+                    'Add flour, then beef broth, and simmer.',
+                    'Return beef to pan, stir in sour cream.',
+                    'Simmer until thickened, serve over noodles.'
+                ]
+            },
+            {
+                'title': 'Miso Soup',
+                'category': 'Soup',
+                'ingredients': '''4 cups dashi stock\n3 tbsp miso paste\n100g tofu\n2 green onions\n1 sheet nori''',
+                'dietary_tags': 'vegetarian,gluten-free',
+                'steps': [
+                    'Heat dashi stock to a simmer.',
+                    'Add tofu cubes and sliced green onions.',
+                    'Dissolve miso paste in a little hot broth, then add to pot.',
+                    'Add nori strips, simmer 2 minutes, serve hot.'
+                ]
+            },
+            {
+                'title': 'Fish Tacos',
+                'category': 'Main Course',
+                'ingredients': '''300g white fish fillets\n8 small tortillas\n1 cup cabbage, shredded\n1 tomato, diced\n1/2 cup sour cream\n1 lime\nTaco seasoning\nSalt and pepper to taste''',
+                'dietary_tags': 'non-vegetarian',
+                'steps': [
+                    'Season fish with taco seasoning, salt, and pepper.',
+                    'Grill or pan-fry fish until cooked through.',
+                    'Warm tortillas, fill with fish, cabbage, and tomato.',
+                    'Top with sour cream and a squeeze of lime.'
+                ]
+            },
+            {
+                'title': 'Banana Bread',
+                'category': 'Dessert',
+                'ingredients': '''2 cups all-purpose flour\n1 tsp baking soda\n1/4 tsp salt\n1/2 cup butter\n3/4 cup brown sugar\n2 eggs\n2 1/3 cups mashed bananas''',
+                'dietary_tags': 'vegetarian,contains-dairy',
+                'steps': [
+                    'Preheat oven to 175°C (350°F).',
+                    'Mix flour, baking soda, and salt.',
+                    'Cream butter and sugar, add eggs and bananas.',
+                    'Combine wet and dry ingredients.',
+                    'Pour into greased loaf pan and bake 60 minutes.'
+                ]
+            },
+            {
+                'title': 'Shakshuka',
+                'category': 'Breakfast',
+                'ingredients': '''4 eggs\n1 onion\n1 bell pepper\n2 cloves garlic\n400g canned tomatoes\n1 tsp cumin\n1 tsp paprika\nSalt and pepper to taste''',
+                'dietary_tags': 'vegetarian,gluten-free',
+                'steps': [
+                    'Sauté onion, bell pepper, and garlic.',
+                    'Add tomatoes and spices, simmer 10 minutes.',
+                    'Make wells and crack eggs into sauce.',
+                    'Cover and cook until eggs are set.',
+                    'Serve with bread.'
+                ]
+            },
+            {
+                'title': 'Egg Fried Rice',
+                'category': 'Main Course',
+                'ingredients': '''2 cups cooked rice\n2 eggs\n1 cup mixed vegetables\n2 tbsp soy sauce\n2 green onions\n1 tbsp oil\nSalt and pepper to taste''',
+                'dietary_tags': 'vegetarian',
+                'steps': [
+                    'Heat oil in a wok, scramble eggs and set aside.',
+                    'Sauté vegetables, add rice and soy sauce.',
+                    'Add eggs back, toss with green onions.',
+                    'Season and serve hot.'
+                ]
+            },
+            {
+                'title': 'Lemon Garlic Salmon',
+                'category': 'Main Course',
+                'ingredients': '''2 salmon fillets\n2 tbsp lemon juice\n2 cloves garlic, minced\n1 tbsp olive oil\nSalt and pepper to taste''',
+                'dietary_tags': 'non-vegetarian,gluten-free',
+                'steps': [
+                    'Marinate salmon with lemon juice, garlic, salt, and pepper.',
+                    'Pan-sear or bake until cooked through.',
+                    'Serve with vegetables or rice.'
+                ]
+            },
+            {
+                'title': 'French Toast',
+                'category': 'Breakfast',
+                'ingredients': '''4 slices bread\n2 eggs\n1/2 cup milk\n1 tsp cinnamon\n1 tsp vanilla extract\nButter for frying\nMaple syrup to serve''',
+                'dietary_tags': 'vegetarian,contains-dairy',
+                'steps': [
+                    'Whisk eggs, milk, cinnamon, and vanilla.',
+                    'Dip bread slices in mixture.',
+                    'Fry in butter until golden on both sides.',
+                    'Serve with maple syrup.'
+                ]
+            },
+            {
+                'title': 'Quinoa Salad',
+                'category': 'Salad',
+                'ingredients': '''1 cup quinoa\n2 cups water\n1 cucumber, diced\n1 bell pepper, diced\n1/2 cup cherry tomatoes\n1/4 cup olive oil\n2 tbsp lemon juice\nSalt and pepper to taste''',
+                'dietary_tags': 'vegan,gluten-free,healthy',
+                'steps': [
+                    'Cook quinoa in water until fluffy.',
+                    'Mix with vegetables in a bowl.',
+                    'Whisk olive oil and lemon juice, pour over salad.',
+                    'Toss and season to taste.'
+                ]
             }
         ]
         for r in recipes_data:
@@ -1091,6 +1282,73 @@ if __name__ == '__main__':
                         'Sprinkle with red pepper flakes if desired.',
                         'Top with microgreens or sprouts for extra nutrition and presentation.',
                         'Serve immediately while the toast is still warm and crispy.'
+                    ]
+                },
+                {
+                    'title': 'Spaghetti Carbonara',
+                    'category': 'Main Course',
+                    'ingredients': '''200g spaghetti\n100g pancetta\n2 large eggs\n50g pecorino cheese\n50g parmesan\n2 cloves garlic, peeled\nSalt and black pepper to taste''',
+                    'dietary_tags': 'non-vegetarian,contains-dairy',
+                    'steps': [
+                        'Cook spaghetti in salted boiling water until al dente.',
+                        'Fry pancetta with garlic until crisp, then remove garlic.',
+                        'Beat eggs and mix with grated cheeses.',
+                        'Drain pasta and combine with pancetta.',
+                        'Remove from heat, add egg and cheese mixture, and toss quickly.',
+                        'Season with salt and pepper, serve immediately.'
+                    ]
+                },
+                {
+                    'title': 'Margherita Pizza',
+                    'category': 'Main Course',
+                    'ingredients': '''1 pizza dough base\n100g tomato sauce\n125g mozzarella cheese\nFresh basil leaves\n2 tbsp olive oil\nSalt to taste''',
+                    'dietary_tags': 'vegetarian,contains-dairy',
+                    'steps': [
+                        'Preheat oven to 250°C (480°F).',
+                        'Spread tomato sauce over the pizza base.',
+                        'Add sliced mozzarella and drizzle with olive oil.',
+                        'Bake for 10-12 minutes until crust is golden.',
+                        'Top with fresh basil leaves and serve hot.'
+                    ]
+                },
+                {
+                    'title': 'Pancakes',
+                    'category': 'Breakfast',
+                    'ingredients': '''1 cup all-purpose flour\n2 tbsp sugar\n2 tsp baking powder\nPinch of salt\n1 cup milk\n1 egg\n2 tbsp melted butter\nMaple syrup to serve''',
+                    'dietary_tags': 'vegetarian,contains-dairy',
+                    'steps': [
+                        'Mix flour, sugar, baking powder, and salt in a bowl.',
+                        'Whisk milk, egg, and melted butter in another bowl.',
+                        'Combine wet and dry ingredients until just mixed.',
+                        'Heat a non-stick pan and pour batter to form pancakes.',
+                        'Cook until bubbles form, flip and cook until golden.',
+                        'Serve warm with maple syrup.'
+                    ]
+                },
+                {
+                    'title': 'Chicken Caesar Salad',
+                    'category': 'Salad',
+                    'ingredients': '''2 chicken breasts\n1 romaine lettuce\n50g parmesan cheese\n1 cup croutons\nCaesar dressing\nSalt and pepper to taste''',
+                    'dietary_tags': 'non-vegetarian,contains-dairy',
+                    'steps': [
+                        'Season and grill chicken breasts, then slice.',
+                        'Chop romaine lettuce and place in a bowl.',
+                        'Add sliced chicken, croutons, and shaved parmesan.',
+                        'Drizzle with Caesar dressing and toss gently.',
+                        'Serve immediately.'
+                    ]
+                },
+                {
+                    'title': 'Tacos',
+                    'category': 'Main Course',
+                    'ingredients': '''8 small tortillas\n250g ground beef or chicken\n1 onion, chopped\n1 tomato, diced\nLettuce, shredded\nCheddar cheese, grated\nTaco seasoning\nSour cream and salsa to serve''',
+                    'dietary_tags': 'non-vegetarian,contains-dairy',
+                    'steps': [
+                        'Cook ground meat with taco seasoning and chopped onion.',
+                        'Warm tortillas in a pan.',
+                        'Fill tortillas with meat, lettuce, tomato, and cheese.',
+                        'Top with sour cream and salsa.',
+                        'Serve immediately.'
                     ]
                 }
             ]
