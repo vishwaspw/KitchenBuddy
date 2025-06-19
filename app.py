@@ -6,6 +6,25 @@ import os
 from datetime import datetime
 import json
 from models import db
+from models.db_models import db
+
+from flask import Flask
+from flask_sqlalchemy import SQLAlchemy
+
+app = Flask(__name__)  # ✅ Define this early
+app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///kitchen_assistant.db"
+db = SQLAlchemy(app)
+
+# ✅ Add this AFTER app is defined
+@app.before_first_request
+def create_tables():
+    db.create_all()
+
+# THEN define routes here
+@app.route("/")
+def index():
+    return "Hello, KitchenBuddy!"
+
 
 app = Flask(__name__)
 
