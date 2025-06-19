@@ -7,6 +7,7 @@ from datetime import datetime
 import json
 
 app = Flask(__name__)
+print("DEBUG: app type is", type(app))
 
 # Production configuration
 if os.environ.get('FLASK_ENV') == 'production':
