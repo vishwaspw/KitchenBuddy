@@ -1,4 +1,7 @@
 # Models package 
 from app import db
 
-db = SQLAlchemy() 
+# Models package 
+from app import db
+
+from app import db 
