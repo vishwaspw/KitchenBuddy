@@ -835,7 +835,8 @@ def voice_command():
 @app.route('/populate_db')
 def populate_db_route():
     import populate_db
-    return "Database populated!"
+    from models.db_models import Recipe
+    return f"Database populated! Recipe count: {Recipe.query.count()}"
 
 if __name__ == '__main__':
     with app.app_context():
