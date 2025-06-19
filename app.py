@@ -262,7 +262,11 @@ def recipe_step(recipe_id, step_number):
     
     current_step = steps[step_number - 1]
     total_steps = len(steps)
-    
+
+    # Timer session variables
+    timer_minutes = session.get('timer_minutes')
+    timer_start_time = session.get('timer_start_time')
+
     # Update session with current cooking state
     session['current_recipe_id'] = recipe_id
     session['current_step'] = step_number
@@ -272,7 +276,8 @@ def recipe_step(recipe_id, step_number):
                          current_step=current_step,
                          step_number=step_number,
                          total_steps=total_steps,
-                         steps=steps)
+                         timer_minutes=timer_minutes,
+                         timer_start_time=timer_start_time)
 
 @app.route('/recipe/<int:recipe_id>/next_step')
 @login_required

@@ -69,12 +69,24 @@ class CookingTimer {
             `;
             timerContainer.appendChild(alert);
         }
+        // Play timer sound
+        let audio = document.getElementById('timerDoneAudio');
+        if (!audio) {
+            audio = document.createElement('audio');
+            audio.id = 'timerDoneAudio';
+            audio.src = '/static/audio/timer_done.mp3';
+            audio.preload = 'auto';
+            document.body.appendChild(audio);
+        }
+        audio.currentTime = 0;
+        audio.play();
     }
 }
 
 // Initialize timer when DOM is loaded
 document.addEventListener('DOMContentLoaded', function() {
     const timer = new CookingTimer();
+    window.CookingTimerInstance = timer;
     
     // Add timer controls to the page
     const timerButtons = document.querySelectorAll('.timer-btn');

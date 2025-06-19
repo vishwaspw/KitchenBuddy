@@ -142,6 +142,16 @@
                     <i class="fas fa-microphone fa-2x"></i>
                 </button>
                 <p class="mt-3 text-muted small">Click to start voice recognition</p>
+                <script>
+                document.addEventListener('DOMContentLoaded', function() {
+                    const voiceBtn = document.getElementById('voiceBtn');
+                    if (voiceBtn) {
+                        voiceBtn.addEventListener('click', function() {
+                            window.location.href = '/voice_only';
+                        });
+                    }
+                });
+                </script>
                 {% else %}
                 <div class="alert alert-info">
                     <i class="fas fa-info-circle me-2"></i>
@@ -152,18 +162,4 @@
         </div>
     </div>
 </div>
-{% endblock %}
-
-{% block extra_js %}
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    const voiceBtn = document.getElementById('voiceBtn');
-    if (voiceBtn) {
-        voiceBtn.addEventListener('click', function() {
-            // Voice button functionality will be implemented in main.js
-            console.log('Voice button clicked');
-        });
-    }
-});
-</script>
 {% endblock %} 

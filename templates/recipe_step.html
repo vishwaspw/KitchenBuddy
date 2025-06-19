@@ -206,4 +206,30 @@
 {% block extra_js %}
 <script src="{{ url_for('static', filename='js/mic.js') }}"></script>
 <script src="{{ url_for('static', filename='js/timer.js') }}"></script>
+{% if timer_minutes and timer_start_time %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Calculate remaining time
+        const startTime = new Date('{{ timer_start_time }}').getTime();
+        const now = Date.now();
+        const durationMs = parseInt('{{ timer_minutes }}') * 60 * 1000;
+        const elapsed = now - startTime;
+        let remainingMs = durationMs - elapsed;
+        if (remainingMs > 0) {
+            const remainingMinutes = Math.floor(remainingMs / 60000);
+            const remainingSeconds = Math.floor((remainingMs % 60000) / 1000);
+            // Start the timer with remaining time
+            if (window.CookingTimerInstance) {
+                window.CookingTimerInstance.startTimer(remainingMinutes + remainingSeconds / 60);
+            } else {
+                setTimeout(function() {
+                    if (window.CookingTimerInstance) {
+                        window.CookingTimerInstance.startTimer(remainingMinutes + remainingSeconds / 60);
+                    }
+                }, 300);
+            }
+        }
+    });
+</script>
+{% endif %}
 {% endblock %} 
