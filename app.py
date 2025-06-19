@@ -832,6 +832,129 @@ def voice_command():
             'message': 'An error occurred while processing your command.'
         })
 
+@app.route('/populate_all')
+def populate_all():
+    from models.db_models import User, Recipe, Step
+    from werkzeug.security import generate_password_hash
+    db.create_all()
+    # Ensure permanent admin user
+    admin = User.query.filter_by(username='Vishwas').first()
+    if not admin:
+        admin = User(
+            username='Vishwas',
+            email='vishwas@example.com',
+            password_hash=generate_password_hash('Vish@1kb'),
+            is_admin=True
+        )
+        db.session.add(admin)
+        db.session.commit()
+    else:
+        admin.password_hash = generate_password_hash('Vish@1kb')
+        admin.is_admin = True
+        db.session.commit()
+
+    # Populate sample recipes if none exist
+    if Recipe.query.count() == 0:
+        recipes_data = [
+            {
+                'title': 'Butter Chicken',
+                'category': 'Main Course',
+                'ingredients': '''500g chicken breast, cubed\n1 cup yogurt\n2 tbsp tandoori masala\n2 tbsp butter\n1 cup tomato puree\n1/2 cup cream\n1 tbsp kasoori methi\n1 tsp garam masala\n1 tsp red chili powder\n1 tbsp ginger-garlic paste\nSalt to taste''',
+                'dietary_tags': 'non-vegetarian,gluten-free,creamy',
+                'steps': [
+                    'Marinate chicken with yogurt, tandoori masala, and salt for 2 hours.',
+                    'Grill or bake chicken until charred and cooked through.',
+                    'Heat butter in a pan, add ginger-garlic paste, cook for 2 minutes.',
+                    'Add tomato puree, spices, and cook until oil separates.',
+                    'Add cream, kasoori methi, and cooked chicken.',
+                    'Simmer for 10 minutes, garnish with cream and butter.',
+                    'Serve hot with naan or rice.'
+                ]
+            },
+            {
+                'title': 'Vegetable Stir Fry',
+                'category': 'Main Course',
+                'ingredients': '''2 tbsp vegetable oil\n2 cloves garlic, minced\n1 inch ginger, minced\n2 bell peppers, sliced\n1 cup broccoli florets\n1 cup snap peas\n2 carrots, julienned\n2 tbsp soy sauce\n1 tbsp oyster sauce\n1 tsp cornstarch\n1/4 cup water\nSalt and pepper to taste''',
+                'dietary_tags': 'vegetarian,vegan,gluten-free',
+                'steps': [
+                    'Heat oil in a wok or large skillet over high heat.',
+                    'Add garlic and ginger, stir-fry for 30 seconds until fragrant.',
+                    'Add bell peppers and carrots, stir-fry for 2 minutes.',
+                    'Add broccoli and snap peas, continue stir-frying for 3 minutes.',
+                    'Mix cornstarch with water and add to pan along with soy sauce and oyster sauce.',
+                    'Stir until sauce thickens, about 1-2 minutes.',
+                    'Season with salt and pepper, serve hot over steamed rice.'
+                ]
+            },
+            {
+                'title': 'Chocolate Chip Cookies',
+                'category': 'Dessert',
+                'ingredients': '''2 1/4 cups all-purpose flour\n1 tsp baking soda\n1 tsp salt\n1 cup unsalted butter, softened\n3/4 cup granulated sugar\n3/4 cup brown sugar\n2 large eggs\n2 tsp vanilla extract\n2 cups chocolate chips''',
+                'dietary_tags': 'vegetarian,contains-dairy',
+                'steps': [
+                    'Preheat oven to 375°F (190°C) and line baking sheets with parchment paper.',
+                    'In a bowl, whisk together flour, baking soda, and salt.',
+                    'In a large bowl, cream together butter and both sugars until light and fluffy.',
+                    'Beat in eggs one at a time, then stir in vanilla.',
+                    'Gradually mix in the flour mixture until just combined.',
+                    'Stir in chocolate chips.',
+                    'Drop rounded tablespoons of dough onto prepared baking sheets.',
+                    'Bake for 9-11 minutes until golden brown around the edges.',
+                    'Let cool on baking sheets for 5 minutes, then transfer to wire racks.'
+                ]
+            },
+            {
+                'title': 'Greek Salad',
+                'category': 'Salad',
+                'ingredients': '''1 large cucumber, diced\n4 large tomatoes, diced\n1 red onion, thinly sliced\n1 cup Kalamata olives\n200g feta cheese, cubed\n2 tbsp extra virgin olive oil\n1 tbsp red wine vinegar\n1 tsp dried oregano\nSalt and pepper to taste''',
+                'dietary_tags': 'vegetarian,gluten-free',
+                'steps': [
+                    'In a large bowl, combine cucumber, tomatoes, and red onion.',
+                    'Add Kalamata olives and feta cheese cubes.',
+                    'In a small bowl, whisk together olive oil, red wine vinegar, and oregano.',
+                    'Pour dressing over the salad and gently toss to combine.',
+                    'Season with salt and pepper to taste.',
+                    'Let the salad sit for 10 minutes to allow flavors to meld.',
+                    'Serve chilled as a refreshing side dish or light meal.'
+                ]
+            },
+            {
+                'title': 'Avocado Toast',
+                'category': 'Breakfast',
+                'ingredients': '''2 slices whole grain bread\n1 ripe avocado\n1 lemon\nSalt and pepper to taste\nRed pepper flakes (optional)\nMicrogreens or sprouts (optional)''',
+                'dietary_tags': 'vegetarian,vegan,gluten-free',
+                'steps': [
+                    'Toast the bread until golden brown and crispy.',
+                    'Cut the avocado in half, remove the pit, and scoop the flesh into a bowl.',
+                    'Mash the avocado with a fork until smooth but still slightly chunky.',
+                    'Squeeze lemon juice over the mashed avocado and season with salt and pepper.',
+                    'Spread the avocado mixture evenly over the toasted bread.',
+                    'Sprinkle with red pepper flakes if desired.',
+                    'Top with microgreens or sprouts for extra nutrition and presentation.',
+                    'Serve immediately while the toast is still warm and crispy.'
+                ]
+            }
+        ]
+        for r in recipes_data:
+            recipe = Recipe(
+                title=r['title'],
+                category=r['category'],
+                ingredients=r['ingredients'],
+                dietary_tags=r['dietary_tags'],
+                user_id=admin.id
+            )
+            db.session.add(recipe)
+            db.session.flush()
+            for i, step_text in enumerate(r['steps'], 1):
+                step = Step(
+                    recipe_id=recipe.id,
+                    step_number=i,
+                    instruction=step_text
+                )
+                db.session.add(step)
+        db.session.commit()
+    return "Admin and sample recipes populated!"
+
 @app.route('/populate_db')
 def populate_db_route():
     import populate_db
