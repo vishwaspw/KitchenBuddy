@@ -5,26 +5,6 @@ from werkzeug.security import generate_password_hash, check_password_hash
 import os
 from datetime import datetime
 import json
-from models import db
-from models.db_models import db
-
-from flask import Flask
-from flask_sqlalchemy import SQLAlchemy
-
-app = Flask(__name__)  # ✅ Define this early
-app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///kitchen_assistant.db"
-db = SQLAlchemy(app)
-
-# ✅ Add this AFTER app is defined
-@app.before_first_request
-def create_tables():
-    db.create_all()
-
-# THEN define routes here
-@app.route("/")
-def index():
-    return "Hello, KitchenBuddy!"
-
 
 app = Flask(__name__)
 
@@ -38,7 +18,16 @@ else:
 
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
-db.init_app(app)
+db = SQLAlchemy(app)
+
+@app.before_first_request
+def create_tables():
+    db.create_all()
+
+# THEN define routes here
+@app.route("/")
+def index():
+    return "Hello, KitchenBuddy!"
 
 login_manager = LoginManager()
 login_manager.init_app(app)
