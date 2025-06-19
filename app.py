@@ -858,6 +858,18 @@ def create_admin():
         db.session.commit()
     return "Admin user now has username: Vishwas and password: Vish@1kb"
 
+@app.route('/debug_users')
+def debug_users():
+    from models.db_models import User
+    users = User.query.all()
+    return "<br>".join([f"username: {u.username}, email: {u.email}, is_admin: {u.is_admin}" for u in users])
+
+@app.route('/debug_recipes')
+def debug_recipes():
+    from models.db_models import Recipe
+    recipes = Recipe.query.all()
+    return "<br>".join([f"title: {r.title}" for r in recipes])
+
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()
