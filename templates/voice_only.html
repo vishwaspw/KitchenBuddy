@@ -223,6 +223,27 @@
         </div>
     </div>
 </div>
+
+{% if active_session and active_session.recipe and active_session.recipe.steps and active_session.current_step %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Get the current step's voice_instruction or instruction
+        var stepObj = {{ active_session.recipe.steps[active_session.current_step - 1]|tojson }};
+        var text = stepObj.voice_instruction || stepObj.instruction;
+        if (text) {
+            var synth = window.speechSynthesis;
+            if (synth) {
+                synth.cancel(); // Stop any current speech
+                var utter = new SpeechSynthesisUtterance(text);
+                utter.rate = 0.9;
+                utter.pitch = 1;
+                utter.volume = 0.8;
+                synth.speak(utter);
+            }
+        }
+    });
+</script>
+{% endif %}
 {% endblock %}
 
 {% block extra_js %}

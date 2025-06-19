@@ -152,7 +152,6 @@ class VoiceOnlyInterface {
 
     async executeAction(action) {
         let response = '';
-        
         switch (action) {
             case 'next':
                 response = await this.sendVoiceCommand('next_step');
@@ -174,7 +173,19 @@ class VoiceOnlyInterface {
                 break;
         }
 
-        if (response) {
+        // Always prioritize step_instruction for TTS if present
+        if (response && typeof response === 'object') {
+            if (response.step_instruction) {
+                this.updateVoiceFeedback(response.step_instruction);
+                this.speak(response.step_instruction);
+            } else if (response.message) {
+                this.updateVoiceFeedback(response.message);
+                this.speak(response.message);
+            } else if (response.response) {
+                this.updateVoiceFeedback(response.response);
+                this.speak(response.response);
+            }
+        } else if (typeof response === 'string') {
             this.updateVoiceFeedback(response);
             this.speak(response);
         }

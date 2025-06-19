@@ -5,6 +5,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 import os
 from datetime import datetime
 import json
+import re
 
 app = Flask(__name__)
 print("DEBUG: app type is", type(app))
@@ -620,6 +621,60 @@ def handle_voice_intent(intent, text, current_recipe_id, current_step):
             'message': help_message
         }
     
+    elif intent == 'how_much_time_left':
+        # For now, just return a placeholder (can be improved to check timer_manager)
+        return jsonify({
+            'success': True,
+            'message': 'You have X minutes left on your timer.'
+        })
+    
+    elif command.startswith('go_to_step'):
+        # Parse step number from command, e.g., 'go_to_step 3'
+        match = re.search(r'go_to_step\s*(\d+)', command)
+        if match:
+            step_num = int(match.group(1))
+            if 1 <= step_num <= total_steps:
+                active_session = CookingSession.query.filter_by(
+                    user_id=current_user.id,
+                    is_active=True
+                ).first()
+                active_session.current_step = step_num
+                db.session.commit()
+                step_obj = recipe.steps[step_num - 1] if recipe.steps else None
+                step_text = (step_obj.voice_instruction or step_obj.instruction) if step_obj else ''
+                return jsonify({
+                    'success': True,
+                    'message': f'Jumped to step {step_num}: {step_text}',
+                    'step_instruction': step_text
+                })
+            else:
+                return jsonify({
+                    'success': False,
+                    'message': f'Step {step_num} is out of range.'
+                })
+        else:
+            return jsonify({
+                'success': False,
+                'message': 'Please specify a valid step number.'
+            })
+    
+    elif command == 'list_all_steps':
+        steps_text = '\n'.join([f"Step {step.step_number}: {step.voice_instruction or step.instruction}" for step in recipe.steps])
+        return jsonify({
+            'success': True,
+            'message': steps_text
+        })
+    
+    elif command == 'help':
+        help_text = (
+            "Available voice commands: Next step, Previous step, Repeat step, Show ingredients, Set timer, Stop cooking, "
+            "How much time is left, Go to step X, List all steps, and Help."
+        )
+        return jsonify({
+            'success': True,
+            'message': help_text
+        })
+    
     else:
         message = "I didn't understand that command. Try saying 'help' to learn what I can do."
         if text_to_speech:
@@ -763,9 +818,13 @@ def voice_command():
             if current_step < total_steps:
                 active_session.current_step += 1
                 db.session.commit()
+                # Get new step
+                new_step_obj = recipe.steps[active_session.current_step - 1] if recipe.steps else None
+                step_text = (new_step_obj.voice_instruction or new_step_obj.instruction) if new_step_obj else ''
                 return jsonify({
                     'success': True,
                     'message': f'Moving to step {active_session.current_step} of {recipe.title}',
+                    'step_instruction': step_text,
                     'redirect_url': url_for('recipe_step', recipe_id=recipe.id, step_number=active_session.current_step)
                 })
             else:
@@ -778,9 +837,13 @@ def voice_command():
             if current_step > 1:
                 active_session.current_step -= 1
                 db.session.commit()
+                # Get new step
+                new_step_obj = recipe.steps[active_session.current_step - 1] if recipe.steps else None
+                step_text = (new_step_obj.voice_instruction or new_step_obj.instruction) if new_step_obj else ''
                 return jsonify({
                     'success': True,
                     'message': f'Moving to step {active_session.current_step} of {recipe.title}',
+                    'step_instruction': step_text,
                     'redirect_url': url_for('recipe_step', recipe_id=recipe.id, step_number=active_session.current_step)
                 })
             else:
@@ -791,10 +854,12 @@ def voice_command():
         
         elif command == 'repeat_step':
             current_step_obj = recipe.steps[current_step - 1] if recipe.steps else None
+            step_text = (current_step_obj.voice_instruction or current_step_obj.instruction) if current_step_obj else ''
             if current_step_obj:
                 return jsonify({
                     'success': True,
-                    'message': f'Step {current_step}: {current_step_obj.instruction}'
+                    'message': f'Step {current_step}: {step_text}',
+                    'step_instruction': step_text
                 })
             else:
                 return jsonify({
@@ -822,6 +887,56 @@ def voice_command():
                 'success': True,
                 'message': 'Cooking session ended. You can start a new recipe anytime.',
                 'redirect_url': url_for('dashboard')
+            })
+        
+        elif command == 'how_much_time_left':
+            # For now, just return a placeholder (can be improved to check timer_manager)
+            return jsonify({
+                'success': True,
+                'message': 'You have X minutes left on your timer.'
+            })
+        
+        elif command.startswith('go_to_step'):
+            # Parse step number from command, e.g., 'go_to_step 3'
+            match = re.search(r'go_to_step\s*(\d+)', command)
+            if match:
+                step_num = int(match.group(1))
+                if 1 <= step_num <= total_steps:
+                    active_session.current_step = step_num
+                    db.session.commit()
+                    step_obj = recipe.steps[step_num - 1] if recipe.steps else None
+                    step_text = (step_obj.voice_instruction or step_obj.instruction) if step_obj else ''
+                    return jsonify({
+                        'success': True,
+                        'message': f'Jumped to step {step_num}: {step_text}',
+                        'step_instruction': step_text
+                    })
+                else:
+                    return jsonify({
+                        'success': False,
+                        'message': f'Step {step_num} is out of range.'
+                    })
+            else:
+                return jsonify({
+                    'success': False,
+                    'message': 'Please specify a valid step number.'
+                })
+        
+        elif command == 'list_all_steps':
+            steps_text = '\n'.join([f"Step {step.step_number}: {step.voice_instruction or step.instruction}" for step in recipe.steps])
+            return jsonify({
+                'success': True,
+                'message': steps_text
+            })
+        
+        elif command == 'help':
+            help_text = (
+                "Available voice commands: Next step, Previous step, Repeat step, Show ingredients, Set timer, Stop cooking, "
+                "How much time is left, Go to step X, List all steps, and Help."
+            )
+            return jsonify({
+                'success': True,
+                'message': help_text
             })
         
         else:
