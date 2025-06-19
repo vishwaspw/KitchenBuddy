@@ -26,9 +26,11 @@ def create_tables():
     db.create_all()
 
 # THEN define routes here
-@app.route("/")
+@app.route('/')
 def index():
-    return "Hello, KitchenBuddy!"
+    """Home page with featured recipes"""
+    featured_recipes = Recipe.query.limit(6).all()
+    return render_template('index.html', recipes=featured_recipes)
 
 login_manager = LoginManager()
 login_manager.init_app(app)
@@ -60,12 +62,6 @@ except ImportError as e:
     text_to_speech = None
     ai_generator = None
     timer_manager = None
-
-@app.route('/')
-def index():
-    """Home page with featured recipes"""
-    featured_recipes = Recipe.query.limit(6).all()
-    return render_template('index.html', recipes=featured_recipes)
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
