@@ -832,6 +832,11 @@ def voice_command():
             'message': 'An error occurred while processing your command.'
         })
 
+@app.route('/populate_db')
+def populate_db_route():
+    import populate_db
+    return "Database populated!"
+
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()
